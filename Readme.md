@@ -39,7 +39,7 @@ Setting common defaults via a plist, and overriding the version via the command 
 <dict>
     <key>Packages</key>
     <array>
-        <string>/Users/grahamgilbert/src/Work/pebble-internal/ClearReg/ClearReg.pkg</string>
+        <string>/Users/grahamgilbert/src/ClearReg/ClearReg.pkg</string>
         <string>/Users/grahamgilbert/Desktop/create_grahamgilbert-1.0.pkg</string>
     </array>
     <key>Name</key>
