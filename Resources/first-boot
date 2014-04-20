@@ -58,7 +58,7 @@ First Boot Package Installer %s
             else:
                 log.info('Network connection is inactive, retrying...')
                 time.sleep(10)
-
+    retry_limit = plist_opts.get('RetryCount')
     # if the packages dir isn't empty, loop over them
     if os.listdir(packages_dir):
         # We're installing, wait to see the output
@@ -67,18 +67,32 @@ First Boot Package Installer %s
             log.info(('Installing %s...') % package)
             package_path = os.path.join(packages_dir, package)
             command = [installer, '-pkg', package_path, '-target', '/']
-            log_path = open(logfile, 'a')  # so that data written to it will be appended
-            task = subprocess.Popen(command, stdout=log_path, stderr=log_path)
-            task.communicate()
-            if task.returncode == 0:
-                # Package installed ok, we're good to remove it
-                log.info(('%s installed successfully.') % package)
+            # check if we've reached the retry limit
+            retry_key = package + '_count'
+            retry_count = plist_opts.get(retry_key, 0)
+            if retry_count <= retry_limit:
+                log_path = open(logfile, 'a')  # so that data written to it will be appended
+                task = subprocess.Popen(command, stdout=log_path, stderr=log_path)
+                task.communicate()
+                if task.returncode == 0:
+                    # Package installed ok, we're good to remove it
+                    log.info(('%s installed successfully.') % package)
+                    try:
+                        os.remove(package_path)
+                    except:
+                        shutil.rmtree(package_path)
+                else:
+                    log.info(('%s didn\'t install successfully. Will retry on next boot.') % package)
+                    retry_count = retry_count + 1
+                    plist_opts[retry_key] = retry_count
+                    plistlib.writePlist(plist_opts, os.path.join(firstboot_dir, 'config.plist'))
+            else:
+                log.info(('Error limit for %s has been reached, removing the package.') % package)
                 try:
                     os.remove(package_path)
                 except:
                     shutil.rmtree(package_path)
-            else:
-                log.info(('%s didn\'t install successfully. Will retry on next boot.') % package)
+                
 
     # if there aren't any packages, remove everything we've put in
     else:

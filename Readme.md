@@ -4,7 +4,7 @@
 ## Features
 
 - Is designed with scripting and automation in mind, with options able to be configured with a configuration plist or via options on the command line (or a mixture of both)
-- Will re-try failed packages (in case of Active Directory not being available, for example)
+- Will re-try failed packages a specified number of times (in case of Active Directory not being available, for example)
 - Will wait for the network to be available before installing (optional, can be disabled if desired)
 
 Run with ``--help`` for the full list of options.
@@ -52,6 +52,14 @@ Setting common defaults via a plist, and overriding the version via the command 
     </false>
     <key>Output</key>
     <string>/Users/Shared/firstboot</string>
+    <key>RetryCount</key>
+    <integer>5</integer>
 </dict>
 </plist>
 ```
+
+## Credits
+
+The original inspiration for this script came from Rich Trouton's [First Boot Package Install](https://github.com/rtrouton/First-Boot-Package-Install).
+
+This script makes use of Per Olofsson's [LoginLog](https://github.com/MagerValp/LoginLog) for displaying the log file whilst the script is running, so massive thanks to him for releasing it.
