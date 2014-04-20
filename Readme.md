@@ -30,7 +30,7 @@ Setting common defaults via a plist, and overriding the version via the command 
  sudo ./first-boot-pkg --plist /Users/grahamgilbert/Desktop/first-boot-config.plist --version 2.3
  ```
  
- ## Configuration plist
+##Configuration plist
  
  ```xml
  <?xml version="1.0" encoding="UTF-8"?>
