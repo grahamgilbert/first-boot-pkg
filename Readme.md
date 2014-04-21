@@ -49,7 +49,7 @@ Setting common defaults via a plist, and overriding the version via the command 
     <key>Version</key>
     <string>2.4</string>
     <key>Network</key>
-    </false>
+    <false/>
     <key>Output</key>
     <string>/Users/Shared/firstboot</string>
     <key>RetryCount</key>
