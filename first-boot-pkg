@@ -15,6 +15,8 @@ default_name = "first-boot.pkg"
 default_output_dir = os.getcwd()
 default_network = True
 default_retry_count = 10
+now = localtime()
+default_version = "%04d.%02d.%02d" % (now.tm_year, now.tm_mon, now.tm_mday)
 pkgbuild = "/usr/bin/pkgbuild"
 
 def main():
@@ -32,6 +34,7 @@ def main():
               "May be specified more than once. "))
     
     o.add_option("-v", "--version",
+        default=default_version,
         help=("Version of the built package. Defaults to 'YYYY.MM.DD' "
               "derived from today's date. "))
               
@@ -39,7 +42,8 @@ def main():
         help=("Identifier of the built package. Defaults to '%s'. "
               % default_identifier))
     
-    o.add_option("-n", "--name", default=default_name,
+    o.add_option("-n", "--name", 
+        default=default_name,
         help=("Name of the built package. Defaults to '%s'. "
               % default_name))
     
@@ -65,7 +69,7 @@ def main():
     
     # Check if we're using a plist. 
     # If there aren't packages and no plist (with packages in), bail
-    plist_options = {}
+    plist_opts = {}
     if opts.plist:
         try:
             plist_opts = plistlib.readPlist(opts.plist)
@@ -101,10 +105,9 @@ def main():
     print '----------------------------------------------------------------'
     
     # Check for version either on command line or plist
-    version = opts.version or plist_opts.get('Version')
-    if not version:
-        now = localtime()
-        version = "%04d.%02d.%02d" % (now.tm_year, now.tm_mon, now.tm_mday)
+    version = opts.version
+    if version == default_version and 'Version' in plist_opts:
+        version = plist_opts.get('Version')
     
     # Name
     name = opts.name
