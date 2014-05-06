@@ -30,7 +30,7 @@ def main():
     
     o.add_option('-p', '--pkg', action="append", dest='packages',
         metavar='PACKAGE',
-        help=("Aa package to include for installation. "
+        help=("A package to include for installation. "
               "May be specified more than once. "))
     
     o.add_option("-v", "--version",
