@@ -62,7 +62,7 @@ def main():
         
     o.add_option("--plist",
         help=("Optional. Path to an XML plist file containing "
-              "key/value pairs for Version, Name, Output firectory, Identifier, "
+              "key/value pairs for Version, Name, Output directory, Identifier, "
               "and Packages. "))
     
     opts, args = o.parse_args()
