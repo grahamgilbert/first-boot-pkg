@@ -19,6 +19,14 @@ now = localtime()
 default_version = "%04d.%02d.%02d" % (now.tm_year, now.tm_mon, now.tm_mday)
 pkgbuild = "/usr/bin/pkgbuild"
 
+def fail(errmsg=''):
+    '''Print any error message to stderr,
+    clean up install data, and exit'''
+    if errmsg:
+        print >> sys.stderr, errmsg
+    # exit
+    exit(1)
+
 def main():
     # options
     # reverse domain
