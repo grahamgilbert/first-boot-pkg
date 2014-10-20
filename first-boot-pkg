@@ -140,11 +140,6 @@ def main():
     if not os.path.isdir(output_dir) or not os.access(output_dir, os.W_OK):
         sys.exit("Output directory '%s' either doesn't exist or is not writable!"
             % output_dir)
-
-    # No restart
-    no_restart = opts.norestart
-    if no_restart == default_no_restart and 'No_Restart' in plist_opts:
-        no_restart = plist_opts.get('No_Restart')
     
     # Network
     network = opts.network
