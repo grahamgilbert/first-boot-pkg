@@ -7,6 +7,7 @@ import sys
 import tempfile
 import shutil
 import subprocess
+import tempfile
 
 from time import localtime
 
@@ -18,6 +19,7 @@ default_retry_count = 10
 now = localtime()
 default_version = "%04d.%02d.%02d" % (now.tm_year, now.tm_mon, now.tm_mday)
 pkgbuild = "/usr/bin/pkgbuild"
+productbuild = "/usr/bin/productbuild"
 
 def fail(errmsg=''):
     '''Print any error message to stderr,
@@ -28,11 +30,6 @@ def fail(errmsg=''):
     exit(1)
 
 def main():
-    # options
-    # reverse domain
-    # version
-    # series of packages
-    # plist - load plist options first, override them with command line
     usage = "%prog [options]"
     o = optparse.OptionParser(usage=usage)
     
@@ -54,7 +51,7 @@ def main():
         default=default_name,
         help=("Name of the built package. Defaults to '%s'. "
               % default_name))
-    
+
     o.add_option("--network", action="store_true",
         default=default_network,
         help=("Wait for network to be available before installing packages. "))
@@ -63,6 +60,7 @@ def main():
         default=default_output_dir,
         help=("Path to save the resulting package. Defaults to the current "
               "working directory. "))
+
     o.add_option("--retry-count",
         default=default_retry_count,
         help=("Number of times to retry failed package installs. "
@@ -142,6 +140,11 @@ def main():
     if not os.path.isdir(output_dir) or not os.access(output_dir, os.W_OK):
         sys.exit("Output directory '%s' either doesn't exist or is not writable!"
             % output_dir)
+
+    # No restart
+    no_restart = opts.norestart
+    if no_restart == default_no_restart and 'No_Restart' in plist_opts:
+        no_restart = plist_opts.get('No_Restart')
     
     # Network
     network = opts.network
@@ -221,17 +224,37 @@ def main():
     os.chmod(os.path.join(install_dir, 'first-boot'), 0755)
     os.chown(os.path.join(install_dir, 'first-boot'), 0, 0)
     
-    output_pkg = os.path.join(output_dir, name)
+    output_pkg_dir = tempfile.mkdtemp()
+    output_pkg = os.path.join(output_pkg_dir,name)
     
     # All the files are there, build the package
-    subprocess.call([
-        pkgbuild,
-        "--root", root,
-        "--identifier", identifier,
-        "--version", version,
-        output_pkg])
+    cmd = [
+    pkgbuild,
+    "--root", root,
+    "--identifier", identifier,
+    "--version", version,
+    output_pkg
+    ]
+
+    # Build the package
+    subprocess.call(cmd)
+
+    # Build the distribution package
+    dist_output = os.path.join(output_dir, name)
+    cmd = [
+    productbuild,
+    "--package", output_pkg,
+    dist_output
+    ]
+    subprocess.call(cmd)
+    
+    try:
+        os.remove(output_pkg)
+    except:
+        pass
+
     
     shutil.rmtree(root)
-    
+
 if __name__ == '__main__':
     main()
