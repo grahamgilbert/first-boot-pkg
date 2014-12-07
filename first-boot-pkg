@@ -160,18 +160,28 @@ def main():
     packages_dir = os.path.join(root, firstboot_dir, 'packages/')
     os.makedirs(packages_dir)
     
+    # Get the number of packages.
+    package_number = len(boot_packages)
+
     # Copy the packages into /usr/local/first-boot/packages
+    counter = 0
     for package in boot_packages:
+        # Rename the package so it has a number in front - will preserve the speficied order.
+        package_name = os.path.basename(package)
+        counter = counter + 1
+        package_name = str(counter) + '-' +package_name
+        package_name = package_name.zfill(package_number)
+
         # Get package name, check if it already exists in dir
-        if os.path.exists(os.path.join(packages_dir, os.path.basename(package))):
-            print >> sys.stderr, ('%s already exists. Use a different package name')% os.path.join(packages_dir, os.path.basename(package))
+        if os.path.exists(os.path.join(packages_dir, package_name)):
+            print >> sys.stderr, ('%s already exists. Use a different package name')% os.path.join(packages_dir, package_name)
             exit(1)
         else:
             # Try to copy the file (flat packages) or directory (bundle-style)
             try:
-                shutil.copy(package, os.path.join(packages_dir, os.path.basename(package)))
+                shutil.copy(package, os.path.join(packages_dir, package_name))
             except:
-                shutil.copytree(package, os.path.join(packages_dir, os.path.basename(package)))
+                shutil.copytree(package, os.path.join(packages_dir, package_name))
     
     # Create the config plist
     config_plist = {}
