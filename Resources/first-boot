@@ -29,11 +29,21 @@ def ip_addresses():
     command = "ifconfig  | grep -E 'inet.[0-9]' | grep -v '127.0.0.1' | awk '{ print $2}' | wc -l"
     proc = subprocess.Popen(command, shell=True,stdout=subprocess.PIPE)
     return proc.communicate()[0].replace('\n', '')
+    
+def all_done():
+    if not os.listdir(packages_dir):
+        sleep_time=10
+        time.sleep(sleep_time)
+        cleanup()
+        subprocess.call(['/sbin/reboot'])
 
 def cleanup():
+    log_path = open(logfile, 'a')
     log.info('No more packages have been found to install, cleaning up.')
     # remove launchdaemon
-    os.remove('/Library/LaunchDaemons/com.grahamgilbert.first-boot-pkg.plist')
+    plist_opts = plistlib.readPlist(config_plist)
+    launchd = os.path.join('/Library/LaunchDaemons/', plist_opts.get('LaunchDaemon'))
+    os.remove(launchd)
     # remove launchagent
     os.remove('/Library/LaunchAgents/se.gu.it.LoginLog.plist')
     # remove loginlog.app
@@ -48,6 +58,8 @@ First Boot Package Installer %s
 ######################################################
 ''') % time.strftime("%Y-%m-%d %H:%M:%S"))
     plist_opts = plistlib.readPlist(config_plist)
+    # Detect new network hardware
+    subprocess.call(['/usr/sbin/networksetup', '-detectnewhardware'])
     if plist_opts.get('Network') == True:
         # Check if the network is up
         while True:
@@ -92,15 +104,12 @@ First Boot Package Installer %s
                     os.remove(package_path)
                 except:
                     shutil.rmtree(package_path)
-                
-
-    # if there aren't any packages, remove everything we've put in
-    else:
-        sleep_time=1
-        cleanup()
+            all_done()                
     
     # We're done, reboot. Wait 20 seconds so the log window can be read.
+    sleep_time = 20
     time.sleep(sleep_time)
+    all_done()
     subprocess.call(['/sbin/reboot'])
 
 if __name__ == '__main__':

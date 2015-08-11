@@ -30,9 +30,9 @@ Setting common defaults via a plist, and overriding the version via the command 
 ```bash
  sudo ./first-boot-pkg --plist /Users/grahamgilbert/Desktop/first-boot-config.plist --version 2.3
  ```
- 
+
 ##Configuration plist
- 
+
  ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN"      "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -47,6 +47,8 @@ Setting common defaults via a plist, and overriding the version via the command 
     <string>package-name.pkg</string>
     <key>Identifier</key>
     <string>com.grahamgilbert.test.pkg</string>
+    <key>LaunchDaemonIdentifier</key>
+    <string>com.grahamgilbert.first-boot-pkg</string>
     <key>Version</key>
     <string>2.4</string>
     <key>Network</key>
@@ -64,6 +66,8 @@ Setting common defaults via a plist, and overriding the version via the command 
 ## Notes
 
 By default, the network retry and sleep count are both set to 10 for a total of 100 seconds. If you would like a smaller delay with a total of 100 seconds, use a RetryCount of 100 and a SleepCount of 1. Note that a smaller SleepCount may result in more log entries.
+
+You can now specify a "LaunchDaemonIdentifier". This will allow you to override the default value of "com.grahamgilbert.first-boot-pkg"
 
 ## Credits
 
