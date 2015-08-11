@@ -29,8 +29,16 @@ def ip_addresses():
     command = "ifconfig  | grep -E 'inet.[0-9]' | grep -v '127.0.0.1' | awk '{ print $2}' | wc -l"
     proc = subprocess.Popen(command, shell=True,stdout=subprocess.PIPE)
     return proc.communicate()[0].replace('\n', '')
+    
+def all_done():
+    if not os.listdir(packages_dir):
+        sleep_time=10
+        time.sleep(sleep_time)
+        cleanup()
+        subprocess.call(['/sbin/reboot'])
 
 def cleanup():
+    log_path = open(logfile, 'a')
     log.info('No more packages have been found to install, cleaning up.')
     # remove launchdaemon
     os.remove('/Library/LaunchDaemons/com.grahamgilbert.first-boot-pkg.plist')
@@ -59,6 +67,7 @@ First Boot Package Installer %s
                 log.info('Network connection is inactive, retrying...')
                 time_limit = time.sleep(plist_opts.get('SleepCount'))
     retry_limit = plist_opts.get('RetryCount')
+
     # if the packages dir isn't empty, loop over them
     if os.listdir(packages_dir):
         # We're installing, wait to see the output
@@ -92,15 +101,11 @@ First Boot Package Installer %s
                     os.remove(package_path)
                 except:
                     shutil.rmtree(package_path)
-                
-
-    # if there aren't any packages, remove everything we've put in
-    else:
-        sleep_time=1
-        cleanup()
+            all_done()                
     
     # We're done, reboot. Wait 20 seconds so the log window can be read.
     time.sleep(sleep_time)
+    all_done()
     subprocess.call(['/sbin/reboot'])
 
 if __name__ == '__main__':
