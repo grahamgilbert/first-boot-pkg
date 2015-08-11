@@ -41,7 +41,9 @@ def cleanup():
     log_path = open(logfile, 'a')
     log.info('No more packages have been found to install, cleaning up.')
     # remove launchdaemon
-    os.remove('/Library/LaunchDaemons/com.grahamgilbert.first-boot-pkg.plist')
+    plist_opts = plistlib.readPlist(config_plist)
+    launchd = os.path.join('/Library/LaunchDaemons/', plist_opts.get('LaunchDaemon'))
+    os.remove(launchd)
     # remove launchagent
     os.remove('/Library/LaunchAgents/se.gu.it.LoginLog.plist')
     # remove loginlog.app
@@ -67,7 +69,6 @@ First Boot Package Installer %s
                 log.info('Network connection is inactive, retrying...')
                 time_limit = time.sleep(plist_opts.get('SleepCount'))
     retry_limit = plist_opts.get('RetryCount')
-
     # if the packages dir isn't empty, loop over them
     if os.listdir(packages_dir):
         # We're installing, wait to see the output
@@ -104,6 +105,7 @@ First Boot Package Installer %s
             all_done()                
     
     # We're done, reboot. Wait 20 seconds so the log window can be read.
+    sleep_time = 20
     time.sleep(sleep_time)
     all_done()
     subprocess.call(['/sbin/reboot'])
