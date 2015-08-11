@@ -58,6 +58,8 @@ First Boot Package Installer %s
 ######################################################
 ''') % time.strftime("%Y-%m-%d %H:%M:%S"))
     plist_opts = plistlib.readPlist(config_plist)
+    # Detect new network hardware
+    command = "/usr/sbin/networksetup -detectnewhardware"
     if plist_opts.get('Network') == True:
         # Check if the network is up
         while True:
