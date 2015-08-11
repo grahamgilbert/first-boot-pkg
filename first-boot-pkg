@@ -16,6 +16,7 @@ default_name = "first-boot.pkg"
 default_output_dir = os.getcwd()
 default_network = True
 default_retry_count = 10
+default_sleep_count = 10
 now = localtime()
 default_version = "%04d.%02d.%02d" % (now.tm_year, now.tm_mon, now.tm_mday)
 pkgbuild = "/usr/bin/pkgbuild"
@@ -65,6 +66,11 @@ def main():
         default=default_retry_count,
         help=("Number of times to retry failed package installs. "
               "Defaults to %s. ")% default_retry_count)
+              
+    o.add_option("--sleep-count",
+        default=default_sleep_count,
+        help=("Amount of seconds to sleep when looking for network. "
+              "Defaults to %s. ")% default_sleep_count)
         
     o.add_option("--plist",
         help=("Optional. Path to an XML plist file containing "
@@ -150,6 +156,11 @@ def main():
     retry_count = opts.retry_count
     if retry_count == default_retry_count and 'RetryCount' in plist_opts:
         retry_count = plist_opts.get('RetryCount')
+        
+    # sleep count
+    sleep_count = opts.sleep_count
+    if sleep_count == default_sleep_count and 'SleepCount' in plist_opts:
+        sleep_count = plist_opts.get('SleepCount')
     
     # Everything is set, start building the package
     pkg_output_path = os.path.join(output_dir, name)
@@ -187,6 +198,7 @@ def main():
     config_plist = {}
     config_plist['Network'] = network
     config_plist['RetryCount'] = retry_count
+    config_plist['SleepCount'] = sleep_count
     plistlib.writePlist(config_plist, os.path.join(root, firstboot_dir, 'config.plist'))
     
     # Copy the LaunchDaemon, LaunchAgent and LoginLog.app to the right places
