@@ -57,7 +57,7 @@ First Boot Package Installer %s
                 break
             else:
                 log.info('Network connection is inactive, retrying...')
-                time.sleep(10)
+                time_limit = time.sleep(plist_opts.get('SleepCount'))
     retry_limit = plist_opts.get('RetryCount')
     # if the packages dir isn't empty, loop over them
     if os.listdir(packages_dir):
