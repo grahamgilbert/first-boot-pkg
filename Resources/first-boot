@@ -60,6 +60,7 @@ First Boot Package Installer %s
     plist_opts = plistlib.readPlist(config_plist)
     # Detect new network hardware
     command = "/usr/sbin/networksetup -detectnewhardware"
+    proc = subprocess.Popen(command, shell=True,stdout=subprocess.PIPE)
     if plist_opts.get('Network') == True:
         # Check if the network is up
         while True:
