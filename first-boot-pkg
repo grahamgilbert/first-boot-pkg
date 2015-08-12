@@ -8,6 +8,7 @@ import tempfile
 import shutil
 import subprocess
 import tempfile
+import xml.parsers.expat
 
 from time import localtime
 
@@ -95,7 +96,7 @@ def main():
     if opts.plist:
         try:
             plist_opts = plistlib.readPlist(opts.plist)
-        except (ExpatError, IOError), err:
+        except (xml.parsers.expat.ExpatError, IOError), err:
             fail('Could not read %s: %s' % (opts.plist, err))
     
     if not opts.packages and not 'Packages' in plist_opts:
