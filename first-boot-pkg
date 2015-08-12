@@ -154,6 +154,7 @@ def main():
     if launchd == default_launchd and 'LaunchDaemonIdentifier' in plist_opts:
         # Not passed one via the command line and the setting is in the plist
         launchd = plist_opts.get('LaunchDaemonIdentifier')
+        launchdplist = plist_opts.get('LaunchDaemonIdentifier') + '.plist'
     
     # Output 
     output_dir = opts.output_dir
