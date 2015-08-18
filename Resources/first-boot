@@ -32,10 +32,12 @@ def ip_addresses():
     
 def all_done():
     if not os.listdir(packages_dir):
+        plist_opts = plistlib.readPlist(config_plist)
         sleep_time=10
         time.sleep(sleep_time)
         cleanup()
-        subprocess.call(['/sbin/reboot'])
+        if plist_opts.get('NoReboot') == False:
+            subprocess.call(['/sbin/reboot'])
 
 def cleanup():
     log_path = open(logfile, 'a')
@@ -50,6 +52,8 @@ def cleanup():
     shutil.rmtree('/Library/PrivilegedHelperTools/LoginLog.app')
     # remove firstboot_dir
     shutil.rmtree(firstboot_dir)
+    # Kill LoginLog
+    subprocess.call(['/usr/bin/pkill', 'LoginLog'])
 
 def main():
     log.info(('''
@@ -106,11 +110,12 @@ First Boot Package Installer %s
                     shutil.rmtree(package_path)
             all_done()                
     
-    # We're done, reboot. Wait 20 seconds so the log window can be read.
+    # We're done, reboot if requested. Wait 20 seconds so the log window can be read.
     sleep_time = 20
     time.sleep(sleep_time)
     all_done()
-    subprocess.call(['/sbin/reboot'])
+    if plist_opts.get('NoReboot') == False:
+        subprocess.call(['/sbin/reboot'])
 
 if __name__ == '__main__':
     main()

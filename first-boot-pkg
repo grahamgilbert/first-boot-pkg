@@ -8,6 +8,7 @@ import tempfile
 import shutil
 import subprocess
 import tempfile
+import xml.parsers.expat
 
 from time import localtime
 
@@ -16,6 +17,7 @@ default_launchd = "com.grahamgilbert.first-boot-pkg"
 default_name = "first-boot.pkg"
 default_output_dir = os.getcwd()
 default_network = True
+default_noreboot = False
 default_retry_count = 10
 default_sleep_count = 10
 now = localtime()
@@ -67,6 +69,10 @@ def main():
         help=("Path to save the resulting package. Defaults to the current "
               "working directory. "))
 
+    o.add_option("--noreboot", action="store_true",
+        default=default_noreboot,
+        help=("Specify whether to not reboot after installing packages. "))
+
     o.add_option("--retry-count",
         default=default_retry_count,
         help=("Number of times to retry failed package installs. "
@@ -90,7 +96,7 @@ def main():
     if opts.plist:
         try:
             plist_opts = plistlib.readPlist(opts.plist)
-        except (ExpatError, IOError), err:
+        except (xml.parsers.expat.ExpatError, IOError), err:
             fail('Could not read %s: %s' % (opts.plist, err))
     
     if not opts.packages and not 'Packages' in plist_opts:
@@ -148,6 +154,7 @@ def main():
     if launchd == default_launchd and 'LaunchDaemonIdentifier' in plist_opts:
         # Not passed one via the command line and the setting is in the plist
         launchd = plist_opts.get('LaunchDaemonIdentifier')
+        launchdplist = plist_opts.get('LaunchDaemonIdentifier') + '.plist'
     
     # Output 
     output_dir = opts.output_dir
@@ -163,6 +170,12 @@ def main():
     network = opts.network
     if network == default_network and 'Network' in plist_opts:
         network = plist_opts.get('Network')
+    
+    # No Reboot
+    noreboot = opts.noreboot
+    if noreboot == default_noreboot and 'NoReboot' in plist_opts:
+        # Not passed one via the command line and the setting is in the plist
+        noreboot = plist_opts.get('NoReboot')
     
     # Retry count
     retry_count = opts.retry_count
@@ -209,6 +222,7 @@ def main():
     # Create the config plist
     config_plist = {}
     config_plist['Network'] = network
+    config_plist['NoReboot'] = noreboot
     config_plist['RetryCount'] = retry_count
     config_plist['SleepCount'] = sleep_count
     config_plist['LaunchDaemon'] = launchdplist
