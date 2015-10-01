@@ -6,7 +6,8 @@
 - Is designed with scripting and automation in mind, with options able to be configured with a configuration plist or via options on the command line (or a mixture of both)
 - Will re-try failed packages a specified number of times (in case of Active Directory not being available, for example)
 - Will wait for the network to be available before installing (optional, can be disabled if desired)
-- Can specify amount of seconds to retry network (optional)
+- Can specify amount of seconds to retry network (optional
+- Can specify whether your first boot package requires a reboot or not
 
 Run with ``--help`` for the full list of options.
 
@@ -59,6 +60,8 @@ Setting common defaults via a plist, and overriding the version via the command 
     <integer>5</integer>
     <key>SleepCount</key>
     <integer>10</integer>
+    <key>NoReboot</key>
+    <true/>
 </dict>
 </plist>
 ```

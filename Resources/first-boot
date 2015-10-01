@@ -46,8 +46,9 @@ def cleanup():
     plist_opts = plistlib.readPlist(config_plist)
     launchd = os.path.join('/Library/LaunchDaemons/', plist_opts.get('LaunchDaemon'))
     os.remove(launchd)
-    # remove launchagent
+    # remove launchagents
     os.remove('/Library/LaunchAgents/se.gu.it.LoginLog.plist')
+    os.remove('/Library/LaunchAgents/se.gu.it.LoginLog.user.plist')
     # remove loginlog.app
     shutil.rmtree('/Library/PrivilegedHelperTools/LoginLog.app')
     # remove firstboot_dir
