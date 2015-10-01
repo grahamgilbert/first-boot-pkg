@@ -253,6 +253,12 @@ def main():
     # Set the permissions
     os.chmod(os.path.join(launchAgent_dir, 'se.gu.it.LoginLog.plist'), 0644)
     os.chown(os.path.join(launchAgent_dir, 'se.gu.it.LoginLog.plist'), 0, 0)
+
+    shutil.copy(os.path.join(script_dir, 'Resources', 'se.gu.it.LoginLog.user.plist'), 
+    os.path.join(launchAgent_dir, 'se.gu.it.LoginLog.user.plist'))
+    # Set the permissions
+    os.chmod(os.path.join(launchAgent_dir, 'se.gu.it.LoginLog.user.plist'), 0644)
+    os.chown(os.path.join(launchAgent_dir, 'se.gu.it.LoginLog.user.plist'), 0, 0)
     
     helperTools_dir = os.path.join(root, 'Library', 'PrivilegedHelperTools')
     os.makedirs(helperTools_dir)
