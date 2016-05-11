@@ -18,6 +18,7 @@ default_name = "first-boot.pkg"
 default_output_dir = os.getcwd()
 default_network = True
 default_noreboot = False
+default_noshutdown = True
 default_retry_count = 10
 default_sleep_count = 10
 now = localtime()
@@ -71,6 +72,10 @@ def main():
 
     o.add_option("--noreboot", action="store_true",
         default=default_noreboot,
+        help=("Specify whether to not reboot after installing packages. "))
+
+    o.add_option("--noshutdown", action="store_true",
+        default=default_noshutdown,
         help=("Specify whether to not reboot after installing packages. "))
 
     o.add_option("--retry-count",
@@ -176,6 +181,12 @@ def main():
     if noreboot == default_noreboot and 'NoReboot' in plist_opts:
         # Not passed one via the command line and the setting is in the plist
         noreboot = plist_opts.get('NoReboot')
+
+    # No Shutdown
+    noshutdown = opts.noshutdown
+    if noshutdown == default_noshutdown and 'NoShutdown' in plist_opts:
+        # Not passed one via the command line and the setting is in the plist
+        noshutdown = plist_opts.get('NoShutdown')
     
     # Retry count
     retry_count = opts.retry_count
@@ -223,6 +234,7 @@ def main():
     config_plist = {}
     config_plist['Network'] = network
     config_plist['NoReboot'] = noreboot
+    config_plist['NoShutdown'] = noshutdown
     config_plist['RetryCount'] = retry_count
     config_plist['SleepCount'] = sleep_count
     config_plist['LaunchDaemon'] = launchdplist
