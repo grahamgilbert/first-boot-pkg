@@ -62,6 +62,8 @@ Setting common defaults via a plist, and overriding the version via the command 
     <integer>10</integer>
     <key>NoReboot</key>
     <true/>
+    <key>NoShutdown</key>
+    <true/>
 </dict>
 </plist>
 ```
@@ -69,6 +71,8 @@ Setting common defaults via a plist, and overriding the version via the command 
 ## Notes
 
 By default, the network retry and sleep count are both set to 10 for a total of 100 seconds. If you would like a smaller delay with a total of 100 seconds, use a RetryCount of 100 and a SleepCount of 1. Note that a smaller SleepCount may result in more log entries.
+
+If you would like to invoke either a reboot or shutdown, set one of the values to false.
 
 You can now specify a "LaunchDaemonIdentifier". This will allow you to override the default value of "com.grahamgilbert.first-boot-pkg"
 

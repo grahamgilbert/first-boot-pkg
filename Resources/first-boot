@@ -38,6 +38,8 @@ def all_done():
         cleanup()
         if plist_opts.get('NoReboot') == False:
             subprocess.call(['/sbin/reboot'])
+        if plist_opts.get('NoShutdown') == False:
+            subprocess.call(['/sbin/shutdown', '-h', 'now'])
 
 def cleanup():
     log_path = open(logfile, 'a')
